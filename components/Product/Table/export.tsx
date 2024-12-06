@@ -13,52 +13,7 @@ async function getData(criteria ,value): Promise<any> {
     return res.data;
   }
   const res = await ProdAction.search(criteria, value)
-  const newItem = {
-    "name": "Sản phẩm thử nghiệm",
-    "price": 100000.00,
-    "description": "Sản phẩm thử nghiệm",
-    "image": "product.png",
-    "category_id": 1,
-    "seller_id": "SEL0000001",
-    "variants": [
-        {
-            "attributes": [
-                {
-                    "attribute_id": 1,
-                    "value": "Vàng" 
-                },
-                {
-                    "attribute_id": 6,
-                    "value": "Mỹ" 
-                }
-            ]
-        },
-        {
-            "attributes": [
-                {
-                    "attribute_id": 1,
-                    "value": "Đỏ" 
-                },
-                {
-                    "attribute_id": 6,
-                    "value": "Ấn Độ" 
-                }
-            ]
-        }
-    ]
-}
-  const response: AxiosResponse = await axios.post(`http://localhost:8000/api/products`, newItem, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      validateStatus: status => status >= 200 && status <= 500
-  });
-  // const response: AxiosResponse = await axios.post(`http://localhost:8000/api/products`, newItem, {
-  //         validateStatus: status => status >= 200 && status <= 500,
-  //         headers: {
-               
-  //         });
-  console.log(response)
+
   // const data = await res.json();
   return res.data.data;
 }

@@ -66,7 +66,15 @@ export interface SignUpPayload {
     email: string;
     password: string;
 }
-
+export interface UpdateProductpayload {
+    product_id: string,
+    name: string,
+    price: number,
+    description: string,
+    image: string,
+    category_id: number,
+    seller_id: string 
+}
 export interface LoginPayload {
     email: string;
     password: string;

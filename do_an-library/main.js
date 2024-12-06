@@ -754,36 +754,23 @@ var ProductOperation = /** @class */ (function () {
             });
         });
     };
-    ProductOperation.prototype.update = function (id, payload, token) {
+    ProductOperation.prototype.update = function (payload) {
         return __awaiter(this, void 0, void 0, function () {
-            var formData, response, error_24;
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var response, error_24;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        formData = new FormData();
-                        formData.append('file', payload.file);
-                        formData.append('data', JSON.stringify(payload.data));
-                        return [4 /*yield*/, axios_1.default.put("".concat(this.baseUrl, "/update/").concat(id, "?").concat(this.langQuery), formData, {
-                                withCredentials: true,
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, axios_1.default.patch("".concat(this.baseUrl), payload, {
                                 validateStatus: function (status) { return status >= 200 && status <= 500; },
-                                headers: {
-                                    Authorization: "Bearer ".concat(token)
-                                },
                             })];
                     case 1:
-                        response = _b.sent();
-                        return [2 /*return*/, {
-                                success: response.data.success,
-                                message: response.data.message,
-                                data: response.data.data,
-                                status: response.status
-                            }];
+                        response = _a.sent();
+                        return [2 /*return*/, response];
                     case 2:
-                        error_24 = _b.sent();
+                        error_24 = _a.sent();
                         console.error("Request that caused the error: ", error_24 === null || error_24 === void 0 ? void 0 : error_24.request);
-                        return [2 /*return*/, { success: (_a = error_24 === null || error_24 === void 0 ? void 0 : error_24.response) === null || _a === void 0 ? void 0 : _a.data, request: error_24 === null || error_24 === void 0 ? void 0 : error_24.request, status: error_24.response ? error_24.response.status : null }];
+                        return [2 /*return*/, error_24];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -802,9 +789,7 @@ var ProductOperation = /** @class */ (function () {
                             })];
                     case 1:
                         response = _b.sent();
-                        return [2 /*return*/, {
-                                response: response
-                            }];
+                        return [2 /*return*/, response];
                     case 2:
                         error_25 = _b.sent();
                         console.log("Error updating account: ", (_a = error_25 === null || error_25 === void 0 ? void 0 : error_25.response) === null || _a === void 0 ? void 0 : _a.data);

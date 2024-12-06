@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import {CreateProduct, BulkCreateFullFlashCard, CheckExistAccount, CreateFTag, CreateFullFlashCard, CreateFullPracticeFromTest, CreateFullQuiz, CreateFullTest, CreateTag, CreateTestFromQuizIds, EmailResetPassword, FetchingType, GetRecord, InitRecord, LangVersion, LoginPayload, RecordFetchingType, RefreshToken, RemarkWriting, ResendOTPPayload, SearchPayload, SignUpPayload, Skill, UpdateAccountPayload, UpdateAvatarPayload, UpdateFTag, UpdateFullFlashCard, UpdateFullQuiz, UpdateFullRecord, UpdateFullTest, UpdateQuiz, UpdateRecord, UpdateRecordConfig, UpdateTag, VerifyOtpForResetPasswordPayload, VerifyOtpPayload } from "./interfaces";
+import {CreateProduct, BulkCreateFullFlashCard, CheckExistAccount, CreateFTag, CreateFullFlashCard, CreateFullPracticeFromTest, CreateFullQuiz, CreateFullTest, CreateTag, CreateTestFromQuizIds, EmailResetPassword, FetchingType, GetRecord, InitRecord, LangVersion, LoginPayload, RecordFetchingType, RefreshToken, RemarkWriting, ResendOTPPayload, SearchPayload, SignUpPayload, Skill, UpdateAccountPayload, UpdateAvatarPayload, UpdateFTag, UpdateFullFlashCard, UpdateFullQuiz, UpdateFullRecord, UpdateFullTest, UpdateQuiz, UpdateRecord, UpdateRecordConfig, UpdateTag, VerifyOtpForResetPasswordPayload, VerifyOtpPayload, UpdateProductpayload } from "./interfaces";
 import { UUID } from "crypto";
 
 export class AuthOperation {
@@ -513,31 +513,17 @@ export class ProductOperation {
             return { success: error?.response?.data, request: error?.request, status: error.response ? error.response.status : null };
 		}
     }
-    async update(id: UUID, payload: UpdateFullQuiz, token: string) {
+    async update(payload: UpdateProductpayload) {
         try {       
-			
-			const formData = new FormData();
-            formData.append('file', payload.file);
-            formData.append('data', JSON.stringify(payload.data));
-			
-			const response: AxiosResponse = await axios.put(`${this.baseUrl}/update/${id}?${this.langQuery}`, formData, {
-				withCredentials: true,
+			const response: AxiosResponse = await axios.patch(`${this.baseUrl}`, payload, {
                 validateStatus: status => status >= 200 && status <= 500,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
 			});
 		
-			return {
-                success: response.data.success,
-                message: response.data.message,
-                data: response.data.data,
-                status: response.status
-            };
+			return response
 	
 		} catch (error: any) {
 			console.error("Request that caused the error: ", error?.request);
-            return { success: error?.response?.data, request: error?.request, status: error.response ? error.response.status : null };
+            return error
 		} 
     }
 

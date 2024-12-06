@@ -107,7 +107,7 @@ export function DataTable<TData, TValue>({
       const res = await action.delete((row.original as any).id);
       
     // console.log(res.response.data)
-      alert(res.response.data.message);
+      alert(res.data.message);
       reload();
     });
   }

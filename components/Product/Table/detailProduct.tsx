@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import { Button } from "@nextui-org/react";
 import { FaPen } from "react-icons/fa";
-import { TabSlider } from "@/components/SliderTab/TabSlider";
+import { User} from "lucide-react";
+import cookie from "js-cookie";
 import { ProductOperation } from "@/do_an-library/main";
+const KeyCanEdit = ["name", "original_price","description","image"]
 
 interface DetailStaffProps {
   onClose: () => void;
@@ -16,9 +18,10 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
   const [isShaking, setIsShaking] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [data, setData] = useState<any>(dataInitial);
-  const [updateData, setupdateData] = useState<any>({});
-	const handleUpdateData =(e, key:string, input:string = "string") => {
+  const [data, setData] = useState(dataInitial);
+  const [updateData, setupdateData] = useState<any>(dataInitial);
+
+  const handleUpdateData =(e, key:string, input:string = "string") => {
     if (input == "number")
       setupdateData({...updateData, [key]: parseInt(e.target.value)});
     else 
@@ -44,6 +47,7 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
+
   const handleClose = () => {
     setIsVisible(false);
   };
@@ -57,49 +61,37 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
   const handleEditClick = () => {
     setIsEditing(true);
   };
-  // const handleSaveClick = async () => {
-  //   // Gửi API về server để cập nhật dữ liệu
-  //   // Sau khi hoàn thành, có thể tắt chế độ chỉnh sửa
-  //   // Gửi API về server để cập nhật dữ liệu
-  //   // Sau khi hoàn thành, có thể tắt chế độ chỉnh sửa
-  //   const myToken: token = {
-  //     token: cookie.get("token"),
-  //   };
-  //   const condition: StudentID = {student_id: dataInitial.student_id }
-  //   const staff =new StudentOperation()
-  //   setIsEditing(false);
-  //   const res =await staff.updateByAdmin(updateData, condition, myToken )
-  //   reload()
-  //   if (res?.error)
-  //     {
-  //       alert(res?.error?.message)
-  //     }
-  //   else 
-  //   {
-  //     alert(res?.message);
-  //     reload()
-  //   }
-  // };
+  const handleSaveClick = async () => {
+    const action =new ProductOperation()
+    setIsEditing(false);
+    updateData.product_id = dataInitial.id;
+    console.log(updateData)
+    const res =await action.update(updateData)
+    console.log(res)
+    reload()
+      alert(res?.data.message);
+      reload()
+  };
 
   const traverse = (obj, isEditing, canEdit?) => {
   
     const editableElements = [];
     const nonEditableElements = [];
   
-    obj && Object?.keys(obj)?.forEach((key) => {
+    Object.keys(obj).forEach((key) => {
       if (obj[key] && typeof obj[key] === 'object') {
         traverse(obj[key], isEditing);
       } else {
         const formattedKey = `student.${key}`;
-        const formattedValue = obj[key] ? obj[key] : "No info"
+        const formattedValue = obj[key] ? obj[key] :  "không có thông tin";
         const element = (
           <div key={key} id="order_id" className="bg-gray-100 p-3 rounded-xl shadow-inner">
-            <div className="font-bold text-base text-black">
-              {key.replace(/([A-Z])/g, " $1")}
+            <div className="font-bold text-base ">
+              {key}
             </div>
-            {isEditing ? (
+            {isEditing && KeyCanEdit.includes(key) ? (
               <input
-                className="w-2/3 bg-transparent border-b-2 border-[#545e7b] text-black"
+                className="w-fit bg-transparent border-b-2 border-[#545e7b] text-black"
                 type="text"
                 value={obj[key]}
                 onChange={(e) => {
@@ -112,7 +104,7 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
             )}
           </div>
         );
-        if (true) {
+        if (KeyCanEdit && KeyCanEdit.includes(key)) {
           editableElements.push(element);
         } else {
           nonEditableElements.push(element);
@@ -121,82 +113,22 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
     });
     return (
       <div className="flex flex-col">
-        {/* <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
-          Thông tin 1
-        </div> */}
+        <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
+          Có thể chỉnh sửa
+        </div>
         <div className="grid-cols-2 grid lg:grid-cols-3 p-10 gap-4">
           {editableElements}
         </div>
 
-        {/* <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
-          Thông tin 2
-        </div> */}
+        <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
+          Không thể chỉnh sửa<a href=""></a>
+        </div>
         <div className="grid-cols-2 grid lg:grid-cols-3 p-10 gap-4">
           {nonEditableElements}
         </div>
       </div>
     );
   };
-  // const traverseToList = (obj, isEditing, canEdit?) => {
-  
-  //   const editableElements = [];
-  //   const nonEditableElements = [];
-  
-  //   obj && Object.keys(obj).forEach((key) => {
-
-  //     if (obj[key] && typeof obj[key] === 'object') {
-  //       console.log(key)
-  //       editableElements.push(traverseToList(obj[key], isEditing));
-  //     } else {
-  //       const formattedKey = `student.${key}`;
-  //       const formattedValue = obj[key] ? obj[key] : "No info"
-  //       const element = (
-  //         <div key={key} id="order_id" className="w-full flex gap-5">
-  //           <div className="font-bold w-24 text-base text-black">
-  //             {key.replace(/([A-Z])/g, " $1")}
-  //           </div>
-  //           {isEditing ? (
-  //             <input
-  //               className="w-2/3 bg-transparent border-b-2 border-[#545e7b] text-black"
-  //               type="text"
-  //               value={obj[key]}
-  //               onChange={(e) => {
-  //                 setData({ ...obj, [key]: e.target.value });
-  //                 handleUpdateData(e, key);
-  //               }}
-  //             />
-  //           ) : (
-  //             <div className="text-black w-fit inline-block break-all">{formattedValue}</div>
-  //           )}
-  //         </div>
-  //       );
-  //       if (true) {
-  //         nonEditableElements.push(element);
-  //       } else {
-  //         nonEditableElements.push(element);
-  //       }
-  //     }
-  //   });
-  //   return (
-  //     <div className="flex flex-col gap-5 w-full">
-  //       {/* <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
-  //         Thông tin 1
-  //       </div> */}
-  //       {editableElements.length !== 0 && 
-  //         <div className="flex flex-col items-center w-full">
-  //           {editableElements}
-  //         </div>}
-
-  //       {/* <div className="text-xl text-black dark:text-white font-bold uppercase text-center">
-  //         Thông tin 2
-  //       </div> */}
-  //       {nonEditableElements.length !== 0 && 
-  //         <div className="flex items-center">
-  //           {nonEditableElements}
-  //         </div>}
-  //     </div>
-  //   );
-  // };
   
   return (
     <motion.div
@@ -212,7 +144,7 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
     >
       <motion.div
         ref={notificationRef}
-        className={`relative w-11/12 bg-white dark:bg-[#14141a] h-5/6 rounded-xl p-4
+        className={`relative w-[98%] sm:w-2/3 bg-white dark:bg-[#14141a] h-168 rounded-xl p-4 overflow-y-auto
           ${isShaking ? "animate-shake" : ""}`}
         initial={{ scale: 0 }}
         animate={{ scale: isVisible ? 1 : 0 }}
@@ -221,19 +153,26 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
       >
         <div className="relative items-center justify-center flex-col flex h-10 w-full border-b-2 border-[#545e7b]">
           <div className="font-bold text-lg sm:text-2xl pb-2 text-black dark:text-white w-full text-center">
-            Thông tin 3
+            Product information
           </div>
+          <Button
+            className="absolute right-0 w-8 h-8 rounded-full mb-2 hover:bg-gray-300"
+            onClick={handleClose}
+          >
+            <IoMdClose className="w-5/6 h-5/6 " />
+          </Button>
+        </div>
+        <div className="h-screen_4/6 overflow-y-scroll border border-[#545e7b] mt-4 no-scrollbar flex flex-col bg-gray-100 dark:bg-[#14141a] p-2 rounded-md 
+        dark:text-white text-black place-content-center w-full">
+            <div className="flex flex-col lg:flex-row items-center w-full">
+              <div className="h-screen_3/5 w-full border py-5 mt-4 flex flex-col items-center bg-white dark:bg-[#20202a] rounded-md text-black place-content-center">
+              {
+                  traverse(data, isEditing)
+              }
+              </div>
+          </div>
+        </div>
 
-            <IoMdClose className=" absolute right-0 w-8 h-8 cursor-pointer
-            rounded-full mb-2 text-white hover:bg-gray-400 hover:text-black"
-            onClick={handleClose}/>
-        </div>
-        {/* <TabSlider allTabs={ filterData } onSelectOption={setFilter}/> */}
-        <div className="w-full h-4/6 border border-[#545e7b] mt-4 no-scrollbar
-        justify-center flex flex-wrap gap-5 bg-gray-100 dark:bg-[#14141a] p-5 rounded-md 
-        dark:text-white text-black  overflow-y-scroll">
-            {traverse(data, isEditing)}
-        </div>
         <div className="w-full flex">
           {!isEditing ? (
             <Button
@@ -244,20 +183,17 @@ const DetailStaff: React.FC<DetailStaffProps> = ({ onClose, dataInitial, reload 
             >
               <FaPen className="xs:mr-2" />
               <span className="hidden xs:block">
-                Sửa
+                Chỉnh sửa
               </span>
             </Button>
           ) : (
             <Button
-              className="w-full rounded-lg mt-5 mb-1 py-3 border-green-700 hover:bg-green-700 text-green-500
+              className="w-full rounded-lg mt-5 mb-1 py-3 border-green-700 hover:bg-green-700 text-white
               bg-transparent drop-shadow-md hover:drop-shadow-xl hover:text-white border 
               hover:shadow-md"
-              onClick={()=>{}}
+              onClick={handleSaveClick}
             >
-              <FaPen className="xs:mr-2" />
-              <span className="hidden xs:block">
                 Lưu
-              </span>
             </Button>
           )}
         </div>
