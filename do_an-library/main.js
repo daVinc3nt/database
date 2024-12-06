@@ -540,28 +540,22 @@ var ProductOperation = /** @class */ (function () {
     ProductOperation.prototype.create = function (payload) {
         return __awaiter(this, void 0, void 0, function () {
             var response, error_16;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _c.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, axios_1.default.post("".concat(this.baseUrl, "/create"), payload, {
-                                withCredentials: true,
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, axios_1.default.post("".concat(this.baseUrl), payload, {
                                 validateStatus: function (status) { return status >= 200 && status <= 500; }
                             })];
                     case 1:
-                        response = _c.sent();
-                        return [2 /*return*/, {
-                                success: response.data.success,
-                                message: response.data.message,
-                                data: response.data.data,
-                                status: response.status
-                            }];
+                        response = _b.sent();
+                        return [2 /*return*/, response.data];
                     case 2:
-                        error_16 = _c.sent();
+                        error_16 = _b.sent();
                         console.log("Error signing up: ", (_a = error_16 === null || error_16 === void 0 ? void 0 : error_16.response) === null || _a === void 0 ? void 0 : _a.data);
                         console.error("Request that caused the error: ", error_16 === null || error_16 === void 0 ? void 0 : error_16.request);
-                        return [2 /*return*/, { success: (_b = error_16 === null || error_16 === void 0 ? void 0 : error_16.response) === null || _b === void 0 ? void 0 : _b.data, request: error_16 === null || error_16 === void 0 ? void 0 : error_16.request, status: error_16.response ? error_16.response.status : null }];
+                        return [2 /*return*/, error_16];
                     case 3: return [2 /*return*/];
                 }
             });

@@ -7,29 +7,17 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 // import { FormattedMessage, useIntl } from "react-intl";
 // import { CreatingProductInfo, ProductOperation, token } from "@/ambLib/amb";
 import cookie from "js-cookie"
-import { CreateProduct } from "@/do_an-library/interfaces";
+import { attribute, CreateProduct, variant } from "@/do_an-library/interfaces";
 import { ProductOperation } from "@/do_an-library/main";
+import { CiCirclePlus } from "react-icons/ci";
 import { toast } from "sonner";
 interface AddStaffProps {
   onClose: () => void;
   reload: any;
 }
-
-interface City {
-  Id: string;
-  Name: string;
-  Districts: District[];
-}
-
-interface District {
-  Id: string;
-  Name: string;
-  Wards: Ward[];
-}
-
-interface Ward {
-  Id: string;
-  Name: string;
+function newCardset(mang, index, phanTuMoi) {
+  mang.splice(index + 1, 0, phanTuMoi);
+  return mang;
 }
 const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
   const openModal = (type) => {
@@ -46,29 +34,86 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [type, setType] = useState();
   // const intl = useIntl();
+  const [newSet, setSet]  = useState<variant[]>(
+    Array(2).fill(null).map(() => ({
+      attributes: Array(3).fill(null).map(() => ({ attribute_id: 0, value: "" }))
+    })));
+  const categories = {
+    "Điện tử & Công nghệ" : 1,
+    "Thời trang & Phụ kiện": 2 ,
+    "Nhà cửa & Đời sống": 3 ,
+    "Sức khỏe & Làm đẹp": 4 ,
+    "Thể thao & Dã ngoại": 5,
+    "Thực phẩm & Đồ uống": 6 ,
+    "Sách & Văn phòng phẩm": 7,
+    "Đồ chơi & Mẹ bé": 8,
+  };
+  const attributes = {
+    "Màu sắc": 1,
+    "Kích thước": 2,
+    "Cân nặng": 3,
+    "Chất liệu": 4,
+    "Thương hiệu": 5,
+    "Xuất xứ": 6,
+    "Bộ nhớ": 7,
+    "RAM": 8,
+    "Chip xử lý": 9,
+    "Dung lượng pin": 10,
+    "Độ phân giải màn hình": 11,
+    "Camera": 12,
+    "Kiểu dáng": 13,
+    "Mùa sử dụng": 14,
+    "Hạn sử dụng": 15,
+    "Khối lượng tịnh": 16,
+    "Thành phần": 17,
+    "Hướng dẫn bảo quản": 18,
+    "Calories": 19,
+    "Loại da phù hợp": 20,
+    "Công dụng chính": 21,
+    "Dung tích": 22,
+    "Độ tuổi khuyên dùng": 23,
+    "Công suất": 24,
+    "Điện áp": 25,
+    "Bảo hành": 26,
+    "Số trang": 27,
+    "Nhà xuất bản": 28,
+    "Năm xuất bản": 29,
+    "Ngôn ngữ": 30,
+    "Độ tuổi khuyến nghị": 31,
+    "Chứng nhận an toàn": 32
+  };
+  const categoryAttributes = {
+    1: [
+      "Bộ nhớ", "RAM", "Chip xử lý", "Dung lượng pin", "Độ phân giải màn hình", "Camera", "Bảo hành", "Thương hiệu", "Xuất xứ"
+    ],
+    2: [
+      "Màu sắc", "Kích thước", "Chất liệu", "Thương hiệu", "Xuất xứ", "Kiểu dáng", "Mùa sử dụng"
+    ],
+    3: [
+      "Công suất", "Điện áp", "Bảo hành", "Thương hiệu", "Xuất xứ", "Cân nặng"
+    ],
+    4: [
+      "Loại da phù hợp", "Công dụng chính", "Dung tích", "Độ tuổi khuyên dùng", "Hạn sử dụng"
+    ],
+    6: [
+      "Hạn sử dụng", "Khối lượng tịnh", "Thành phần", "Hướng dẫn bảo quản", "Calories"
+    ],
+    7: [
+      "Số trang", "Nhà xuất bản", "Năm xuất bản", "Ngôn ngữ", "Cân nặng"
+    ],
+    8: [
+      "Độ tuổi khuyến nghị", "Chứng nhận an toàn", "Thương hiệu", "Xuất xứ"
+    ]
+  };
+  
   const initialProductData: CreateProduct = {
-    Name: "",                    
-    MakeFlag: null,              
-    FinishedGoodsFlag: null,    
-    Color: "",                   
-    SafetyStockLevel: null,        
-    ReorderPoint: null,            
-    StandardCost: null,          
-    ListPrice: null,               
-    Size: "",                   
-    SizeUnitMeasureCode: "",    
-    WeightUnitMeasureCode: "",  
-    Weight: null,                 
-    DaysToManufacture: null,       
-    ProductLine: null,           // 'R' | 'M' | 'T' | 'S' có thể là null
-    Class: null,                 // 'H' | 'M' | 'L' có thể là null
-    Style: null,                 // 'U' | 'M' | 'W' có thể là null
-    ProductSubcategoryID: null,  // số hoặc null
-    ProductModelID: null,        // số hoặc null
-    SellStartDate: new Date(),   // mặc định là ngày hiện tại
-    SellEndDate: null,           // có thể là null nếu chưa chọn
-    DiscontinuedDate: null,      // có thể là null nếu chưa chọn
-    ModifiedDate: new Date(),    // mặc định là ngày hiện tại
+    name: "",
+    price: 0,
+    description: "",
+    image: "",
+    seller_id: "",
+    category_id:0,
+    variants: []
 };
 
   const [Productdata, setProductdata] = useState<CreateProduct>(initialProductData);
@@ -101,7 +146,7 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
     }
   };
 
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: keyof CreateProduct, value: any) => {
     setProductdata((prevState) => ({
       ...prevState,
       [key]: value,
@@ -145,21 +190,24 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const Product =new ProductOperation()
+    Productdata.seller_id = "SEL0000001";
+    Productdata.variants = newSet;
     const res= await Product.create(Productdata)
-    if (res && res.data) {
-      toast.success(res.message)
-    }
-    else {
-      toast.warning(res.message)
-    }
     setProductdata(initialProductData)  
+    alert(res.message)
     reload();
+    setSet(Array(2).fill(null).map(() => ({
+      attributes: Array(3).fill(null).map(() => ({ attribute_id: 0, value: "" }))
+    })))
   };
-
+  // useEffect(()=>{
+  //   console.log(newSet)
+  //   console.log(newSet[0].attributes[0].attribute_id)
+  // },[newSet])
   return (
     
     <motion.div
-      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-60 z-50"
+      className="fixed h-screen top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-60 z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: isVisible ? 1 : 0 }}
       exit={{ opacity: 0 }}
@@ -169,7 +217,7 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
     >
       <motion.div
         ref={notificationRef}
-        className={`relative w-[98%] sm:w-9/12 lg:w-1/2 bg-white dark:bg-[#14141a] rounded-xl p-4 overflow-y-auto ${
+        className={`h-screen lg:w-1/2 bg-white dark:bg-[#14141a] rounded-xl p-4 ${
           isShaking ? "animate-shake" : ""
         }`}
         initial={{ scale: 0 }}
@@ -187,200 +235,166 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
         </div>
         <form
           method="POST" onSubmit={handleSubmit}
+          className="h-[calc(100vh-100px)] w-full flex flex-col  gap-10"
         >
-          <div className="h-fit border border-[#545e7b] mt-4 no-scrollbar flex flex-col items-center bg-white  dark:bg-[#14141a] p-5 rounded-md text-black dark:text-white">
+          <div className="h-1/3 border border-[#545e7b] mt-4 no-scrollbar flex flex-col items-center bg-white  dark:bg-[#14141a] p-5 rounded-md text-black dark:text-white">
             <div 
               className="w-fit h-fit"
             >
-              <div className="flex flex-col gap-3">
-                <input required
-                  type="string"
-                  className={`text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full
-                  `}
-                  placeholder="Name"
-                  value={Productdata.Name}
-                  onChange={(e) => handleInputChange("Name", e.target.value)}
-                />
-
-                <input required
-                  type="string"
-                  className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Corlor"}
-                  value={Productdata.Color}
-                  onChange={(e) => handleInputChange("Color", e.target.value)}
-                />
-              </div>
-
               <div className="flex gap-3 mt-3">
               <input required
-                  type="number"
+                  type="text"
                   className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Standard cost"}
-                  value={Productdata.StandardCost}
-                  onChange={(e) => handleInputChange("StandardCost", e.target.valueAsNumber)}
+                  placeholder={"Name"}
+                  value={Productdata.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                 />
                 
                 <input required
-                  type="number"
+                  type="text"
                   className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Reorder point"}
-                  value={Productdata.ReorderPoint}
-                  onChange={(e) => handleInputChange("ReorderPoint", e.target.valueAsNumber)}
+                  placeholder={"Description"}
+                  value={Productdata.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
                 />
                 
                 <input required
-                  type="number"
+                  type="text"
                   className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Safe stock level"}
-                  value={Productdata.SafetyStockLevel}
-                  onChange={(e) => handleInputChange("SafetyStockLevel", e.target.valueAsNumber)}
+                  placeholder={"Image (only png, jgp allowed)"}
+                  value={Productdata.image}
+                  onChange={(e) => {
+                    handleInputChange("image", e.target.value)}}
                 />
               </div>
               
               <div className="flex gap-3 mt-3"> 
                   <input required
-                    type="string"
+                    type="number"
                     className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                    placeholder={"Size"}
-                    value={Productdata.Size}
-                    onChange={(e) => handleInputChange("Size", e.target.value)}
-                  />
-                  <input 
-                    type="string"
-                    className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                    placeholder={"Size unit to measure code"}
-                    value={Productdata.SizeUnitMeasureCode}
-                    onChange={(e) => handleInputChange("SizeUnitMeasureCode", e.target.value)}
+                    placeholder={"Price (Ex: 200.00)"}
+                    value={Productdata.price ? Productdata.price :""}
+                    onChange={(e) => handleInputChange("price", e.target.valueAsNumber)}
                   />
               </div>
-
-              <div className="flex gap-3 mt-3">               
-                <input required
-                  type="number"
-                  className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Weight"}
-                  value={Productdata.Weight}
-                  onChange={(e) => handleInputChange("Weight", e.target.valueAsNumber)}
-                />
-                <input 
-                  type="text"
-                  className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Weight unit measure code"}
-                  value={Productdata.WeightUnitMeasureCode}
-                  onChange={(e) => handleInputChange("WeightUnitMeasureCode", e.target.value)}
-                />
-              </div>
-
-              <div className="flex gap-3 mt-3">               
-                <div className="w-full">
-                  <span
-                    className="text-xs text-gray-400"
-                  >
-                    {"Discontinued date"}
-                  </span>
-
-                  <input required
-                    type="date"
-                    className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                    onChange={(e) => handleInputChange("DiscontinuedDate", e.target.value)}
-                  />
-                </div>
-
-                <div className="w-full">
-                  <span
-                    className="text-xs text-gray-400"
-                  >
-                    {"Start to sell date"}
-                  </span>
-                  <input required
-                    type="date"
-                    className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                    onChange={(e) => handleInputChange("SellStartDate", e.target.value)}
-                  />
-                </div>
-                
-              </div>
-
-              <div className="flex gap-3 mt-3">
-                <input required 
-                  type="number"
-                  className="text-xs md:text-sm border border-gray-600 rounded  bg-white dark:bg-[#14141a] h-10 p-2 w-full"
-                  placeholder={"Days to manufacture"}
-                  value={Productdata.DaysToManufacture}
-                  onChange={(e) =>
-                    handleInputChange("DaysToManufacture", e.target.valueAsNumber)
-                  }
-                />
-                <input required
-                  type="number"
-                  className={`text-xs md:text-sm border border-gray-600 rounded bg-white  dark:bg-[#14141a] h-10 p-2 w-full
-                  `}
-                  placeholder={"List price"}
-                  value={Productdata.ListPrice}
-                  onChange={(e) => handleInputChange("ListPrice", e.target.valueAsNumber)}
-                />
-              </div>        
-
               <div className="flex gap-3 mt-3">
                 <div
                   className={`text-xs text-center md:text-sm border border-gray-600 rounded  bg-white  dark:bg-[#14141a] h-10 p-2 w-fit
                   `}
                 >
                   <CustomDropdown
-                    label={"Finished product"}
-                    options={["YES", "NO"]}
-                    selectedOption={Productdata.FinishedGoodsFlag !== null && (Productdata.FinishedGoodsFlag? "YES" : "NO")}
-                    onSelectOption={(option) => handleInputChange("FinishedGoodsFlag", option == "YES")}
+                    label={"Choose category"}
+                    options={Object.keys(categories)}
+                    selectedOption={Productdata.category_id !== null && Object.entries(categories).find(([key, val]) => val === Productdata.category_id)?.[0]}
+                    onSelectOption={(option) => handleInputChange("category_id", categories[option])}
                   />
-                </div>
-                <div
-                  className={`text-xs text-center md:text-sm border border-gray-600 rounded  bg-white  dark:bg-[#14141a] h-10 p-2 w-fit
-                  `}
-                >
-                  <CustomDropdown
-                    label={"Make product"}
-                    options={["YES", "NO"]}
-                    selectedOption={Productdata.MakeFlag !== null && (Productdata.MakeFlag? "YES" : "NO")}
-                    onSelectOption={(option) => handleInputChange("MakeFlag", option == "YES")}
-                  />
-                </div>
-                <div
-                  className={`text-xs text-center md:text-sm border border-gray-600 rounded  bg-white  dark:bg-[#14141a] h-10 p-2 w-fit
-                  `}
-                >
-                  <CustomDropdown
-                    label={"Product line"}
-                    options={['R', 'M', 'T', 'S']}
-                    selectedOption={Productdata.ProductLine}
-                    onSelectOption={(option) => handleInputChange("ProductLine", option)}
-                  />
-                </div>
-                <div
-                  className={`text-xs text-center md:text-sm border border-gray-600 rounded bg-white  dark:bg-[#14141a] h-10 p-2 w-fit
-                  `}
-                >
-                  <CustomDropdown
-                    label={"Style"}
-                    options={['U', 'M', 'W']}
-                    selectedOption={Productdata.Style}
-                    onSelectOption={(option) => handleInputChange("Style", option)}
-                  />
-                </div>
-                <div
-                  className={`text-xs text-center md:text-sm border border-gray-600 rounded bg-white  dark:bg-[#14141a] h-10 p-2 w-fit
-                  `}
-                >
-                  <CustomDropdown
-                    label={"Class"}
-                    options={['H', 'M', 'L']}
-                    selectedOption={Productdata.Class}
-                    onSelectOption={(option) => handleInputChange("Class", option)}
-                  />
-                </div>        
+                </div>                 
               </div>
         
             </div>
           </div>
+          {Productdata.category_id !== 0 && <div className="h-2/3 overflow-y-scroll">
+            <div className="w-full text-3xl text-center">Create variants</div>
+            <div className="flex min-h-72 flex-col gap-5 text-white">
+                {newSet.map((ele,i)=> {
+                  return (
+                  <div 
+                      key={i}
+                      className=" w-full h-52 flex p-5
+                      flex-col gap-5 rounded-xl  border border-[#545e7b] relative"
+                  >
+                    <div className="flex gap-5 items-center">
+                      <CustomDropdown
+                        label={"Choose attribute"}
+                        options={categoryAttributes[Productdata.category_id]}
+                        selectedOption={Object.entries(attributes).find(([key, val]) => val === newSet[i].attributes[0].attribute_id)?.[0]
+                        }
+                        onSelectOption={(option)=>{setSet((prevSet) => {
+                          const updatedSet = [...prevSet];
+                          updatedSet[i].attributes[0].attribute_id = attributes[option];
+                          return updatedSet;
+                        })}}
+                      />
+                      <input 
+                        type="text" 
+                        value={newSet[i].attributes[0].value} 
+                        className="text-xs md:text-sm border border-gray-600 bg-transparent rounded h-10 p-2 w-full"
+                        placeholder="Details"
+                        onChange={(e)=>{setSet((prevSet) => {
+                        const updatedSet = [...prevSet];
+                        updatedSet[i].attributes[0].value = e.target.value;
+                        return updatedSet;
+                      })}}/>
+                    </div>
+                    <div className="flex gap-5 items-center">
+                      <CustomDropdown
+                        label={"Choose attribute"}
+                        options={categoryAttributes[Productdata.category_id]}
+                        selectedOption={Object.entries(attributes).find(([key, val]) => val === newSet[i].attributes[1].attribute_id)?.[0]
+                        }
+                        onSelectOption={(option)=>{setSet((prevSet) => {
+                          const updatedSet = [...prevSet];
+                          updatedSet[i].attributes[1].attribute_id = attributes[option];
+                          return updatedSet;
+                        })}}
+                      />
+                      <input 
+                        type="text" 
+                        value={newSet[i].attributes[1].value} 
+                        className="text-xs md:text-sm border border-gray-600 bg-transparent rounded h-10 p-2 w-full"
+                        placeholder="Details"
+                        onChange={(e)=>{setSet((prevSet) => {
+                        const updatedSet = [...prevSet];
+                        updatedSet[i].attributes[1].value = e.target.value;
+                        return updatedSet;
+                      })}}/>
+                    </div>
+                    <div className="flex gap-5 items-center">
+                      <CustomDropdown
+                        label={"Choose attribute"}
+                        options={categoryAttributes[Productdata.category_id]}
+                        selectedOption={Object.entries(attributes).find(([key, val]) => val === newSet[i].attributes[2].attribute_id)?.[0]
+                        }
+                        onSelectOption={(option)=>{setSet((prevSet) => {
+                          const updatedSet = [...prevSet];
+                          updatedSet[i].attributes[2].attribute_id = attributes[option];
+                          return updatedSet;
+                        })}}
+                      />
+                      <input 
+                        type="text" 
+                        value={newSet[i].attributes[2].value} 
+                        className="text-xs md:text-sm border border-gray-600 bg-transparent rounded h-10 p-2 w-full"
+                        placeholder="Details"
+                        onChange={(e)=>{setSet((prevSet) => {
+                        const updatedSet = [...prevSet];
+                        updatedSet[i].attributes[2].value = e.target.value;
+                        return updatedSet;
+                      })}}/>
+                    </div>
+                    <div className="opacity-0  hover:opacity-100 grid place-items-center p-1">
+                        <CiCirclePlus 
+                        onClick={()=>{
+                            let newArray =[...newSet]
+                            newArray = newCardset(newArray, i, 
+                            {
+                              attributes: 
+                              Array(3).fill(null).map(() => ({ attribute_id: 0, value: "" }))
+                            }
+                            )
+                            setSet(newArray)
+                        }}
+                        size={30}
+                        className="w-fit h-fit bg-black/40 rounded-full 
+                        hover:cursor-pointer active:scale-150 transition-all text-white ease-in-out 
+                        duration-500"/>
+                    </div>
+                  </div>
+                )}
+                )}
+            </div>
+          </div>}
+
           <Button
             className="w-full rounded-lg mt-5 mb-1 py-3 border-green-700 hover:bg-green-700 text-green-500
           bg-transparent drop-shadow-md hover:drop-shadow-xl hover:text-white border hover:shadow-md"
@@ -389,7 +403,6 @@ const AddStaff: React.FC<AddStaffProps> = ({ onClose, reload }) => {
           >
              Add
           </Button>
-         
         </form>
       </motion.div>
     </motion.div>

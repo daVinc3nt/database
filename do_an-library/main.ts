@@ -377,22 +377,15 @@ export class ProductOperation {
     }
     async create(payload: CreateProduct) {
         try {
-			const response: AxiosResponse = await axios.post(`${this.baseUrl}/create`, payload, {
-				withCredentials: true,
+			const response: AxiosResponse = await axios.post(`${this.baseUrl}`, payload, {
                 validateStatus: status => status >= 200 && status <= 500
 			});
-			
-			return {
-                success: response.data.success,
-                message: response.data.message,
-                data: response.data.data,
-                status: response.status
-            };
+			return response.data;
 		} 
 		catch (error: any) {
 			console.log("Error signing up: ", error?.response?.data);
             console.error("Request that caused the error: ", error?.request);
-            return { success: error?.response?.data, request: error?.request, status: error.response ? error.response.status : null };
+            return error;
 		}
     }
 

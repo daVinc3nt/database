@@ -225,35 +225,26 @@ export interface UpdateQuizStatistics {
     multipleChoiceCount: number;
     fillingCount: number;
 }
+export interface CreateProduct {
+    name: string;
+    price: number;
+    description: string;
+    image: string;
+    seller_id: string;
+    category_id:number;
+    variants: variant[];
+}
+export interface variant {
+   attributes: attribute[];
+}
+export interface attribute {
+    attribute_id: number;
+    value: string;
+}
 
 export interface CreateFullQuiz {
     file: File;
     data: CreateQuiz
-}
-
-export interface CreateProduct {
-    Name: string;                   
-    MakeFlag: boolean;               
-    FinishedGoodsFlag: boolean;     
-    Color: string;                   
-    SafetyStockLevel: number;       
-    ReorderPoint: number;           
-    StandardCost: number;         
-    ListPrice: number;              
-    Size: string;                    
-    SizeUnitMeasureCode: string;     
-    WeightUnitMeasureCode: string;   
-    Weight: number;                  
-    DaysToManufacture: number;       
-    ProductLine?: 'R' | 'M' | 'T' | 'S'; 
-    Class?: 'H' | 'M' | 'L';
-    Style?: 'U' | 'M' | 'W';
-    ProductSubcategoryID?: number;
-    ProductModelID?: number; 
-    SellStartDate: Date;
-    SellEndDate?: Date; 
-    DiscontinuedDate?: Date;  
-    ModifiedDate: Date;
 }
 
 
